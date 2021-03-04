@@ -2,11 +2,10 @@ import java.text.DecimalFormat;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
-import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class Livro implements Registro{
+public class Livro implements Registro {
 
   protected int id;
   protected String titulo;
@@ -15,60 +14,60 @@ public class Livro implements Registro{
 
   DecimalFormat df = new DecimalFormat("#,##0.00");
 
-  public Livro(int id,String titulo,String autor,float preco){
+  public Livro(int id, String titulo, String autor, float preco) {
     setID(id);
     setTitulo(titulo);
     setAutor(autor);
     setPreco(preco);
   }
 
-  public Livro(String titulo,String autor,float preco){
+  public Livro(String titulo, String autor, float preco) {
     setID(-1);
     setTitulo(titulo);
     setAutor(autor);
     setPreco(preco);
   }
 
-  public Livro(){
-    this(-1,"","",0.0f);
+  public Livro() {
+    this(-1, "", "", 0.0f);
   }
 
   @Override
-  public int getID(){
+  public int getID() {
     return id;
   }
 
   @Override
-  public void setID(int id){
+  public void setID(int id) {
     this.id = id;
   }
 
-  public String getTitulo(){
+  public String getTitulo() {
     return titulo;
   }
 
-  public void setTitulo(String titulo){
+  public void setTitulo(String titulo) {
     this.titulo = titulo;
   }
 
-  public String getAutor(){
+  public String getAutor() {
     return this.autor;
   }
 
-  public void setAutor(String autor){
+  public void setAutor(String autor) {
     this.autor = autor;
   }
 
-  public float getPreco(){
+  public float getPreco() {
     return this.preco;
   }
 
-  public void setPreco(float preco){
+  public void setPreco(float preco) {
     this.preco = preco;
   }
 
   @Override
-  public byte[] toByteArray() throws IOException{
+  public byte[] toByteArray() throws IOException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     DataOutputStream dos = new DataOutputStream(baos);
 
@@ -81,7 +80,7 @@ public class Livro implements Registro{
   }
 
   @Override
-  public void fromByteArray(byte[] ba) throws IOException{
+  public void fromByteArray(byte[] ba) throws IOException {
     ByteArrayInputStream bais = new ByteArrayInputStream(ba);
     DataInputStream dis = new DataInputStream(bais);
 

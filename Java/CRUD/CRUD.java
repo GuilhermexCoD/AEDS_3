@@ -1,8 +1,6 @@
 import java.io.RandomAccessFile;
 import java.lang.reflect.Constructor;
 
-import javax.print.attribute.standard.PrinterMoreInfoManufacturer;
-
 public class CRUD<T extends Registro> {
 
     public static final byte VALIDO = 1;
