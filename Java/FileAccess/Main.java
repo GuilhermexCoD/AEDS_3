@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.RandomAccessFile;
 
 public class Main {
@@ -6,11 +7,14 @@ public class Main {
 
     public static void main(String[] args) {
         Livro l1 = new Livro(1, "Eu, Robô", "Isaac Asimov", 14.9f);
-        Livro l2 = new Livro(2, "Eu Sou A Lenda", "Richard Matheson", 21.99f);
+        // Livro l2 = new Livro(2, "Eu Sou A Lenda", "Richard Matheson", 21.99f);
+        Livro l2 = new Livro(2, "Educação", "Richard Matheson", 21.99f);
 
         System.out.println("Writing in file " + _filePath);
         System.out.println(l1);
         System.out.println(l2);
+
+        new File(_filePath);
 
         byte[] ba;
 
@@ -40,14 +44,12 @@ public class Main {
             int tamanhoByte;
 
             raf.seek(p2);
-
             tamanhoByte = raf.readInt();
             ba = new byte[tamanhoByte];
             raf.read(ba);
             l3 = new Livro(ba);
 
             raf.seek(p1);
-
             tamanhoByte = raf.readInt();
             ba = new byte[tamanhoByte];
             raf.read(ba);
@@ -61,6 +63,7 @@ public class Main {
 
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println(e.getMessage());
         }
 
     }
