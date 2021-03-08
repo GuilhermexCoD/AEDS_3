@@ -1,11 +1,19 @@
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.Predicate;
 
 class Main {
     public static void main(String[] args) {
         // Livros de exemplo
-        Livro l1 = new Livro(-1, "Eu, Robô", "Isaac Asimov", 14.9F);
-        Livro l2 = new Livro(-1, "Eu Sou A Lenda", "Richard Matheson", 21.99F);
-        Livro l3 = new Livro(-1, "Número Zero", "Umberto Eco", 34.11F);
+        Livro l1 = new Livro("Eu, Robô", "Isaac Asimov", 14.9F);
+        Livro l2 = new Livro("Eu Sou A Lenda", "Richard Matheson", 21.99F);
+        Livro l3 = new Livro("Número Zero", "Umberto Eco", 34.11F);
+        Livro l4 = new Livro("E o Vento Levou", "Margaret Mitchell", 56.36F);
+        Livro l5 = new Livro("Orgulho e Preconceito", "Jane Austen", 41.65F);
+
+        List<Livro> livros = new LinkedList<Livro>();
+
         int id1, id2, id3;
 
         try {
@@ -21,6 +29,8 @@ class Main {
             l2.setID(id2);
             id3 = arqLivros.create(l3);
             l3.setID(id3);
+            arqLivros.create(l4);
+            arqLivros.create(l5);
 
             // Busca por dois livros
             System.out.println("Lendo livros");
@@ -46,6 +56,16 @@ class Main {
                 System.out.println("Livro excluído");
             else
                 System.out.println(l);
+
+            System.out.println("Livros com id maior que 1");
+            
+            Predicate<Livro> predicate = livro -> (livro.getID() > 1);
+
+            livros = arqLivros.read(predicate);
+
+            for (Livro livroAtual : livros) {
+                System.out.println(livroAtual);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

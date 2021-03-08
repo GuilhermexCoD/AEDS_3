@@ -1,5 +1,8 @@
 import java.io.RandomAccessFile;
 import java.lang.reflect.Constructor;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.Predicate;
 
 public class CRUD<T extends Registro> {
 
@@ -41,8 +44,10 @@ public class CRUD<T extends Registro> {
         return objeto.getID();
     }
 
-    public T read(int id) throws Exception {
-        T objeto = this.construtor.newInstance();
+    public List<T> read(Predicate<T> condition) throws Exception {
+        List<T> objetos = new LinkedList<T>();
+
+        
         int tamanhoRegistro = 0;
         byte[] ba;
 
@@ -54,6 +59,7 @@ public class CRUD<T extends Registro> {
                 raf.seek(Integer.BYTES);
                 long pointer = raf.getFilePointer();
                 while (pointer < raf.length()) {
+                    T objeto = this.construtor.newInstance();
                     // ler registro
                     byte lapide = raf.readByte();
                     if (isRegistroValido(lapide)) {
@@ -62,9 +68,8 @@ public class CRUD<T extends Registro> {
                         raf.read(ba);
                         objeto.fromByteArray(ba);
 
-                        if (objeto.getID() == id) {
-                            raf.close();
-                            return objeto;
+                        if (condition.test(objeto)) {
+                            objetos.add(objeto);
                         }
                     } else {
                         tamanhoRegistro = raf.readShort();
@@ -73,18 +78,32 @@ public class CRUD<T extends Registro> {
                     pointer = raf.getFilePointer();
                 }
             } else {
-
                 System.out.println("Arquivo vazio");
-                return null;
             }
 
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println(ex.getMessage());
-        }
-        System.out.println("Registro nao encontrado");
 
-        return null;
+            System.out.println("Registro nao encontrado");
+        }
+
+        raf.close();
+
+        return objetos;
+    }
+
+    public T read(int id) throws Exception {
+        Predicate<T> predicate = obj -> (obj.getID() == id);
+
+        T objeto = null;
+        List<T> objetos = read(predicate);
+
+        if (objetos.size() > 0) {
+            objeto = objetos.get(0);
+        }
+
+        return objeto;
     }
 
     public boolean update(T novoObjeto) throws Exception {
