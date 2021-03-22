@@ -1,10 +1,11 @@
 import java.io.RandomAccessFile;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class CRUD<T extends Registro> {
+public class CRUD<T extends Registro> implements EventListener {
 
     public static final byte VALIDO = 1;
     public static final byte INVALIDO = 0;
@@ -13,9 +14,13 @@ public class CRUD<T extends Registro> {
     private String caminhoArquivo = "";
     private RandomAccessFile raf;
 
+    private EventHandler eventHandler;
+
     public CRUD(Constructor<T> construtor, String caminhoArquivo) {
         this.construtor = construtor;
         this.caminhoArquivo = caminhoArquivo;
+
+        this.eventHandler = new EventHandler(this);
     }
 
     public int create(T objeto) {
@@ -34,7 +39,9 @@ public class CRUD<T extends Registro> {
             raf.writeInt(objeto.getID());
             // ir para final do arquivo
             raf.seek(raf.length());
+            long pos = raf.getFilePointer();
             createRegistro(objeto);
+            CallPointerChanged(pos);
             raf.close();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -47,7 +54,6 @@ public class CRUD<T extends Registro> {
     public List<T> read(Predicate<T> condition) throws Exception {
         List<T> objetos = new LinkedList<T>();
 
-        
         int tamanhoRegistro = 0;
         byte[] ba;
 
@@ -246,5 +252,19 @@ public class CRUD<T extends Registro> {
 
     public boolean isRegistroValido(byte b) {
         return (b == VALIDO);
+    }
+
+    public void CallPointerChanged(long pointer) {
+        eventHandler.CallEvent(new EventArgsPointerChanged(this, pointer));
+    }
+
+    @Override
+    public void AddListener(Class<? extends EventArgs> eventArgsClass, Object observer, Method method) {
+        eventHandler.AddListener(eventArgsClass, observer, method);
+    }
+
+    @Override
+    public void RemoveListener(Class<? extends EventArgs> eventArgsClass, Object observer, Method method) {
+        eventHandler.RemoveListener(eventArgsClass, observer, method);
     }
 }

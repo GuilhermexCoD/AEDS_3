@@ -4,7 +4,21 @@ import java.util.List;
 import java.util.function.Predicate;
 
 class Main {
+
+    public static final String DATA_FOLDER = "DataBase/";
+
     public static void main(String[] args) {
+
+        // Teste teste = new Teste("Guilherme");
+
+        // try {
+        // TesteMetodo testeMetodo = new TesteMetodo(teste,
+        // teste.getClass().getMethod("PrintName", String.class));
+        // testeMetodo.runMethod("eu programo em java");
+        // } catch (Exception e) {
+        // // TODO: handle exception
+        // }
+
         // Livros de exemplo
         Livro l1 = new Livro("Eu, Robô", "Isaac Asimov", 14.9F);
         Livro l2 = new Livro("Eu Sou A Lenda", "Richard Matheson", 21.99F);
@@ -19,8 +33,15 @@ class Main {
         try {
 
             // Abre (cria) o arquivo de livros
-            new File("livros.db").delete(); // apaga o arquivo anterior
-            CRUD<Livro> arqLivros = new CRUD<>(Livro.class.getConstructor(), "livros.db");
+            new File(DATA_FOLDER + Livro.class.getName()).delete(); // apaga o arquivo anterior
+            // CRUD<Livro> arqLivros = new CRUD<>(Livro.class.getConstructor(),
+            // "livros.db");
+            // HashExtensivelId<pcvLivroDireto> heId = new
+            // HashExtensivelId<>(pcvLivroDireto.class.getConstructor(), 4,
+            // "dados/livro.hash");
+
+            CRUD_HashId<Livro, pcvLivroDireto> arqLivros = new CRUD_HashId<>(Livro.class.getConstructor(),
+                    DATA_FOLDER + Livro.class.getName(), pcvLivroDireto.class.getConstructor(), 4);
 
             // Insere os três livros
             id1 = arqLivros.create(l1);
@@ -58,7 +79,7 @@ class Main {
                 System.out.println(l);
 
             System.out.println("Livros com id maior que 1");
-            
+
             Predicate<Livro> predicate = livro -> (livro.getID() > 1);
 
             livros = arqLivros.read(predicate);
