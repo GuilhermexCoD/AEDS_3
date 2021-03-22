@@ -15,13 +15,17 @@
  * 
  */
 
+package Model;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class pcvLivroDireto implements RegistroHashExtensivel<pcvLivroDireto> {
+import CrudPack.RegistroHashExtensivelId;
+
+public class pcvLivroDireto implements RegistroHashExtensivelId<pcvLivroDireto> {
 
     private int id;
     private long pos;
@@ -31,7 +35,7 @@ public class pcvLivroDireto implements RegistroHashExtensivel<pcvLivroDireto> {
         this(-1, -1);
     }
 
-    public pcvLivroDireto(int id, int pos) {
+    public pcvLivroDireto(int id, long pos) {
         try {
             this.id = id;
             this.pos = pos;
@@ -63,6 +67,7 @@ public class pcvLivroDireto implements RegistroHashExtensivel<pcvLivroDireto> {
             throw new IOException(String.format("byte array possui um tamanho de %d o tamanho maximo da entidade eh %d",
                     bs.length, TAMANHO));
         }
+
         return bs;
     }
 
@@ -71,6 +76,26 @@ public class pcvLivroDireto implements RegistroHashExtensivel<pcvLivroDireto> {
         DataInputStream dis = new DataInputStream(bais);
         this.id = dis.readInt();
         this.pos = dis.readLong();
+    }
+
+    @Override
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Override
+    public int getId() {
+        return this.id;
+    }
+
+    @Override
+    public void setPos(long pos) {
+        this.pos = pos;
+    }
+
+    @Override
+    public long getPos() {
+        return this.pos;
     }
 
 }

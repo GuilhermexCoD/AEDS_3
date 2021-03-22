@@ -1,9 +1,13 @@
+package Model;
+
 import java.text.DecimalFormat;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+
+import CrudPack.Registro;
 
 public class Livro implements Registro {
 

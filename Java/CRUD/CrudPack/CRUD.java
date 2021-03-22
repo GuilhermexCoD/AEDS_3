@@ -1,9 +1,13 @@
+package CrudPack;
+
 import java.io.RandomAccessFile;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
+
+import EventPack.*;
 
 public class CRUD<T extends Registro> implements EventListener {
 
@@ -41,7 +45,7 @@ public class CRUD<T extends Registro> implements EventListener {
             raf.seek(raf.length());
             long pos = raf.getFilePointer();
             createRegistro(objeto);
-            CallPointerChanged(pos);
+            CallPointerChanged(objeto, pos);
             raf.close();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -254,8 +258,8 @@ public class CRUD<T extends Registro> implements EventListener {
         return (b == VALIDO);
     }
 
-    public void CallPointerChanged(long pointer) {
-        eventHandler.CallEvent(new EventArgsPointerChanged(this, pointer));
+    public void CallPointerChanged(T objeto, long pointer) {
+        eventHandler.CallEvent(new EventArgsPointerChanged(this, objeto, pointer));
     }
 
     @Override

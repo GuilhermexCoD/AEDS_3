@@ -12,6 +12,7 @@ disciplina:
 Implementado pelo Prof. Marcos Kutova
 v1.1 - 2021
 */
+package CrudPack;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -293,6 +294,10 @@ public class HashExtensivel<T extends RegistroHashExtensivel<T>> {
         }
     }
 
+    public T createInstance() throws Exception {
+        return construtor.newInstance();
+    }
+
     public boolean create(T elem) throws Exception {
 
         // Carrega o diretório
@@ -324,6 +329,7 @@ public class HashExtensivel<T extends RegistroHashExtensivel<T>> {
             c.create(elem);
             arqCestos.seek(enderecoCesto);
             arqCestos.write(c.toByteArray());
+            System.out.println("Elemento " + elem.toString());
             return true;
         }
 

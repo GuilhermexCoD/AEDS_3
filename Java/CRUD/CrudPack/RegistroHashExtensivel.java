@@ -9,6 +9,9 @@ conter.
 Implementado pelo Prof. Marcos Kutova
 v1.1 - 2021
 */
+
+package CrudPack;
+
 import java.io.IOException;
 
 public interface RegistroHashExtensivel<T> {

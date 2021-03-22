@@ -1,8 +1,12 @@
+package Model;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+
+import CrudPack.Registro;
 
 public class Usuario implements Registro {
 

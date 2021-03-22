@@ -1,17 +1,20 @@
+package CrudPack;
+
+import EventPack.*;
 import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class CRUD_HashId<TCrud extends Registro, THashId extends RegistroHashExtensivel<THashId>> {
+public class CRUD_HashId<TCrud extends Registro, THashId extends RegistroHashExtensivelId<THashId>> {
     private CRUD<TCrud> crud;
 
-    private HashExtensivelId<THashId> heId;
+    private HashExtensivel<THashId> heId;
 
     public CRUD_HashId(Constructor<TCrud> construtorTCrud, String fileName, Constructor<THashId> construtorHashId,
             int quantidadeDadosPorCesto) throws Exception {
 
         this.crud = new CRUD<>(construtorTCrud, fileName + ".db");
-        this.heId = new HashExtensivelId<>(construtorHashId, quantidadeDadosPorCesto, fileName + ".hash");
+        this.heId = new HashExtensivel<>(construtorHashId, quantidadeDadosPorCesto, fileName + ".hash");
         this.Setup();
 
     }
@@ -26,15 +29,28 @@ public class CRUD_HashId<TCrud extends Registro, THashId extends RegistroHashExt
     public void Setup() {
         try {
             crud.AddListener(EventArgsPointerChanged.class, this,
-                    this.getClass().getMethod("EventOnPointerChanged", EventArgsPointerChanged.class));
+                    this.getClass().getMethod("CreateOnPointerChanged", EventArgsPointerChanged.class));
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
-    public void EventOnPointerChanged(EventArgsPointerChanged args) {
-        System.out.println("received " + args.pointer);
+    public void CreateOnPointerChanged(EventArgsPointerChanged args) {
+        // System.out.println("received " + args.pos);
+        // System.out.println("Data " + args.data.toString());
+        // System.out.println("ID " + args.data.getID());
+
+        try {
+            THashId elem = heId.createInstance();
+            elem.setId(args.data.getID());
+            elem.setPos(args.pos);
+            heId.create(elem);
+
+        } catch (Exception e) {
+
+        }
+
     }
 
     public int create(TCrud objeto) throws Exception {
@@ -42,6 +58,8 @@ public class CRUD_HashId<TCrud extends Registro, THashId extends RegistroHashExt
     }
 
     public TCrud read(int id) throws Exception {
+        THashId elem = heId.read(id);
+        System.out.println("Encontrei pos: " + elem.getPos());
         return crud.read(id);
     }
 
