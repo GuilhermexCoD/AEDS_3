@@ -329,7 +329,6 @@ public class HashExtensivel<T extends RegistroHashExtensivel<T>> {
             c.create(elem);
             arqCestos.seek(enderecoCesto);
             arqCestos.write(c.toByteArray());
-            System.out.println("Elemento " + elem.toString());
             return true;
         }
 

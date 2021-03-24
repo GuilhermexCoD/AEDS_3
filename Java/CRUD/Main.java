@@ -31,12 +31,16 @@ class Main {
 
         List<Livro> livros = new LinkedList<Livro>();
 
-        int id1, id2, id3;
+        int id1, id2, id3, id4, id5;
 
         try {
 
             // Abre (cria) o arquivo de livros
             File directory = new File(DATA_FOLDER);
+            if (!directory.exists()) {
+                directory.mkdir();
+            }
+
             if (directory.isDirectory()) {
                 System.out.println("Deleting directory");
 
@@ -57,33 +61,30 @@ class Main {
             l2.setID(id2);
             id3 = arqLivros.create(l3);
             l3.setID(id3);
-            arqLivros.create(l4);
-            arqLivros.create(l5);
+            id4 = arqLivros.create(l4);
+            id5 = arqLivros.create(l5);
 
-            // Busca por dois livros
-            System.out.println("Lendo livros");
-            System.out.println(arqLivros.read(id3));
+            PrintAmountArq(arqLivros, 5);
+
+            // Altera um livro para um tamanho maior e exibe o resultado
+            System.out.println("Alterando livros");
+            l2.setAutor("Richard Burton Matheson");
+            arqLivros.update(l2);
+            System.out.println(arqLivros.read(id2));
+
+            // Altera um livro para um tamanho menor e exibe o resultado
+            l1.setAutor("I. Asimov");
+            arqLivros.update(l1);
             System.out.println(arqLivros.read(id1));
 
-            // // Altera um livro para um tamanho maior e exibe o resultado
-            // System.out.println("Alterando livros");
-            // l2.autor = "Richard Burton Matheson";
-            // arqLivros.update(l2);
-            // System.out.println(arqLivros.read(id2));
-
-            // // Altera um livro para um tamanho menor e exibe o resultado
-            // l1.autor = "I. Asimov";
-            // arqLivros.update(l1);
-            // System.out.println(arqLivros.read(id1));
-
-            // // Excluir um livro e mostra que não existe mais
-            // System.out.println("Excluindo livros");
-            // arqLivros.delete(id3);
-            // Livro l = arqLivros.read(id3);
-            // if (l == null)
-            // System.out.println("Livro excluído");
-            // else
-            // System.out.println(l);
+            // Excluir um livro e mostra que não existe mais
+            System.out.println("Excluindo livros");
+            arqLivros.delete(id3);
+            Livro l = arqLivros.read(id3);
+            if (l == null)
+                System.out.println("Livro excluído");
+            else
+                System.out.println(l);
 
             // System.out.println("Livros com id maior que 1");
 
@@ -97,6 +98,15 @@ class Main {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void PrintAmountArq(CRUD_HashId arq, int number) throws Exception {
+        System.out.println("Lendo todos os livros");
+
+        for (int i = 0; i < number; i++) {
+            System.out.println(arq.read(i));
+
         }
     }
 }

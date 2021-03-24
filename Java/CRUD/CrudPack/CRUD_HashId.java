@@ -31,25 +31,40 @@ public class CRUD_HashId<TCrud extends Registro, THashId extends RegistroHashExt
             crud.AddListener(EventArgsPointerChanged.class, this,
                     this.getClass().getMethod("CreateOnPointerChanged", EventArgsPointerChanged.class));
 
+            crud.AddListener(EventArgsPointerUpdated.class, this,
+                    this.getClass().getMethod("UpdateOnPointerChanged", EventArgsPointerUpdated.class));
+
+            crud.AddListener(EventArgsPointerRemoved.class, this,
+                    this.getClass().getMethod("RemoveOnPointerChanged", EventArgsPointerRemoved.class));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
-    public void CreateOnPointerChanged(EventArgsPointerChanged args) {
-        // System.out.println("received " + args.pos);
-        // System.out.println("Data " + args.data.toString());
-        // System.out.println("ID " + args.data.getID());
+    public void CreateOnPointerChanged(EventArgsPointerChanged args) throws Exception {
 
-        try {
-            THashId elem = heId.createInstance();
-            elem.setId(args.data.getID());
-            elem.setPos(args.pos);
-            heId.create(elem);
+        THashId elem = heId.createInstance();
+        elem.setId(args.data.getID());
+        elem.setPos(args.pos);
+        heId.create(elem);
 
-        } catch (Exception e) {
+    }
 
-        }
+    public void UpdateOnPointerChanged(EventArgsPointerUpdated args) throws Exception {
+
+        THashId elem = heId.createInstance();
+        elem.setId(args.data.getID());
+        elem.setPos(args.pos);
+        heId.update(elem);
+
+    }
+
+    public void RemoveOnPointerChanged(EventArgsPointerRemoved args) throws Exception {
+
+        THashId elem = heId.createInstance();
+        elem.setId(args.data.getID());
+        elem.setPos(args.pos);
+        heId.delete(elem.getId());
 
     }
 
@@ -59,8 +74,14 @@ public class CRUD_HashId<TCrud extends Registro, THashId extends RegistroHashExt
 
     public TCrud read(int id) throws Exception {
         THashId elem = heId.read(id);
-        System.out.println("Encontrei pos: " + elem.getPos());
-        return crud.read(id);
+
+        TCrud objeto = null;
+
+        if (elem != null && elem.getPos() != -1) {
+            objeto = crud.read(elem.getPos());
+        }
+
+        return objeto;
     }
 
     public List<TCrud> read(Predicate<TCrud> condition) throws Exception {
@@ -68,10 +89,25 @@ public class CRUD_HashId<TCrud extends Registro, THashId extends RegistroHashExt
     }
 
     public boolean update(TCrud novoObjeto) throws Exception {
-        return crud.update(novoObjeto);
+
+        boolean updated = false;
+        THashId elem = heId.read(novoObjeto.getID());
+
+        if (elem.getPos() != -1) {
+            updated = crud.update(novoObjeto, elem.getPos());
+        }
+
+        return updated;
     }
 
     public boolean delete(int id) throws Exception {
-        return crud.delete(id);
+        boolean deleted = false;
+        THashId elem = heId.read(id);
+
+        if (elem.getPos() != -1) {
+            deleted = crud.delete(elem.getPos(), id);
+        }
+
+        return deleted;
     }
 }

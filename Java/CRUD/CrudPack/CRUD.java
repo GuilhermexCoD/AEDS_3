@@ -45,7 +45,7 @@ public class CRUD<T extends Registro> implements EventListener {
             raf.seek(raf.length());
             long pos = raf.getFilePointer();
             createRegistro(objeto);
-            CallPointerChanged(objeto, pos);
+            callPointerChanged(objeto, pos);
             raf.close();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -116,6 +116,91 @@ public class CRUD<T extends Registro> implements EventListener {
         return objeto;
     }
 
+    public T read(Long pos) throws Exception {
+        T objeto = this.construtor.newInstance();
+
+        int tamanhoRegistro = 0;
+        byte[] ba;
+
+        try {
+            raf = new RandomAccessFile(this.caminhoArquivo, "rw");
+
+            raf.seek(pos);
+
+            byte lapide = raf.readByte();
+            if (isRegistroValido(lapide)) {
+
+                tamanhoRegistro = raf.readShort();
+                ba = new byte[tamanhoRegistro];
+                raf.read(ba);
+                objeto.fromByteArray(ba);
+
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println(ex.getMessage());
+
+            System.out.println("Registro nao encontrado");
+        }
+
+        raf.close();
+
+        return objeto;
+    }
+
+    public boolean update(T novoObjeto, Long pos) throws Exception {
+        boolean updated = false;
+
+        int tamanhoRegistro = 0;
+        byte[] ba;
+
+        T objeto = createInstance();
+
+        try {
+            raf = new RandomAccessFile(this.caminhoArquivo, "rw");
+
+            raf.seek(pos);
+
+            byte lapide = raf.readByte();
+            if (isRegistroValido(lapide)) {
+                tamanhoRegistro = raf.readShort();
+                ba = new byte[tamanhoRegistro];
+                raf.read(ba);
+                objeto.fromByteArray(ba);
+
+                if (objeto.getID() == novoObjeto.getID()) {
+                    int tamanhoNovoRegistro = getTamanhoRegistro(novoObjeto);
+                    raf.seek(pos);
+                    if (tamanhoNovoRegistro <= tamanhoRegistro) {
+                        createRegistro(novoObjeto, tamanhoRegistro);
+                        updated = true;
+                    } else {
+                        // Escrevendo lapide INVALIDO
+                        raf.writeByte(INVALIDO);
+                        long pointer = raf.length();
+                        raf.seek(pointer);
+
+                        createRegistro(novoObjeto);
+
+                        callPointerUpdated(novoObjeto, pointer);
+                        updated = true;
+                    }
+                }
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println(ex.getMessage());
+
+            System.out.println("Registro nao encontrado");
+        }
+
+        raf.close();
+
+        return updated;
+    }
+
     public boolean update(T novoObjeto) throws Exception {
 
         T objeto = this.construtor.newInstance();
@@ -142,15 +227,12 @@ public class CRUD<T extends Registro> implements EventListener {
 
                         if (objeto.getID() == novoObjeto.getID()) {
                             int tamanhoNovoRegistro = getTamanhoRegistro(novoObjeto);
+                            raf.seek(pointer);
                             if (tamanhoNovoRegistro <= tamanhoRegistro) {
-                                System.out.println("Registro com tamanho menor");
-                                raf.seek(pointer);
                                 createRegistro(novoObjeto, tamanhoRegistro);
                                 raf.close();
                                 return true;
                             } else {
-                                raf.seek(pointer);
-                                System.out.println("Registro com tamanho maior criando outro no final do arquivo");
                                 // Escrevendo lapide INVALIDO
                                 raf.writeByte(INVALIDO);
                                 raf.seek(raf.length());
@@ -176,6 +258,45 @@ public class CRUD<T extends Registro> implements EventListener {
         System.out.println("Registro nao encontrado");
 
         return false;
+    }
+
+    public boolean delete(Long pos, int id) throws Exception {
+        boolean deleted = false;
+
+        int tamanhoRegistro = 0;
+        byte[] ba;
+
+        try {
+            raf = new RandomAccessFile(this.caminhoArquivo, "rw");
+
+            raf.seek(pos);
+
+            byte lapide = raf.readByte();
+            if (isRegistroValido(lapide)) {
+                tamanhoRegistro = raf.readShort();
+                T objeto = createInstance();
+                ba = new byte[tamanhoRegistro];
+                raf.read(ba);
+                objeto.fromByteArray(ba);
+
+                if (objeto.getID() == id) {
+                    raf.seek(pos);
+                    callPointerRemoved(objeto, pos);
+                    raf.writeByte(INVALIDO);
+                    deleted = true;
+                }
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println(ex.getMessage());
+
+            System.out.println("Registro nao encontrado");
+        }
+
+        raf.close();
+
+        return deleted;
     }
 
     public boolean delete(int id) throws Exception {
@@ -258,8 +379,20 @@ public class CRUD<T extends Registro> implements EventListener {
         return (b == VALIDO);
     }
 
-    public void CallPointerChanged(T objeto, long pointer) {
+    public T createInstance() throws Exception {
+        return this.construtor.newInstance();
+    }
+
+    public void callPointerChanged(T objeto, long pointer) {
         eventHandler.CallEvent(new EventArgsPointerChanged(this, objeto, pointer));
+    }
+
+    public void callPointerUpdated(T objeto, long pointer) {
+        eventHandler.CallEvent(new EventArgsPointerUpdated(this, objeto, pointer));
+    }
+
+    public void callPointerRemoved(T objeto, long pointer) {
+        eventHandler.CallEvent(new EventArgsPointerRemoved(this, objeto, pointer));
     }
 
     @Override
