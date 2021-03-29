@@ -12,16 +12,6 @@ class Main {
 
     public static void main(String[] args) {
 
-        // Teste teste = new Teste("Guilherme");
-
-        // try {
-        // TesteMetodo testeMetodo = new TesteMetodo(teste,
-        // teste.getClass().getMethod("PrintName", String.class));
-        // testeMetodo.runMethod("eu programo em java");
-        // } catch (Exception e) {
-        // // TODO: handle exception
-        // }
-
         // Livros de exemplo
         Livro l1 = new Livro("Eu, Robô", "Isaac Asimov", 14.9F);
         Livro l2 = new Livro("Eu Sou A Lenda", "Richard Matheson", 21.99F);
@@ -55,6 +45,9 @@ class Main {
                     DATA_FOLDER + Livro.class.getName(), pcvLivroDireto.class.getConstructor(), 4);
 
             // Insere os três livros
+            System.out.println("_____________________");
+            System.out.println("Criando livros");
+
             id1 = arqLivros.create(l1);
             l1.setID(id1);
             id2 = arqLivros.create(l2);
@@ -62,29 +55,39 @@ class Main {
             id3 = arqLivros.create(l3);
             l3.setID(id3);
             id4 = arqLivros.create(l4);
+            l4.setID(id4);
             id5 = arqLivros.create(l5);
+            l5.setID(id5);
 
             PrintAmountArq(arqLivros, 5);
 
             // Altera um livro para um tamanho maior e exibe o resultado
+            System.out.println("_____________________");
             System.out.println("Alterando livros");
+
+            System.out.println("Modificando autor Richard Matheson -> Richard Burton Matheson");
             l2.setAutor("Richard Burton Matheson");
             arqLivros.update(l2);
             System.out.println(arqLivros.read(id2));
 
             // Altera um livro para um tamanho menor e exibe o resultado
+            System.out.println("Modificando autor Isaac Asimov -> I. Asimov");
             l1.setAutor("I. Asimov");
             arqLivros.update(l1);
             System.out.println(arqLivros.read(id1));
 
             // Excluir um livro e mostra que não existe mais
+            System.out.println("_____________________");
             System.out.println("Excluindo livros");
+            System.out.println("Excluindo id: " + id3);
             arqLivros.delete(id3);
             Livro l = arqLivros.read(id3);
             if (l == null)
                 System.out.println("Livro excluído");
             else
                 System.out.println(l);
+
+            PrintAmountArq(arqLivros, 5);
 
             // System.out.println("Livros com id maior que 1");
 
@@ -102,6 +105,7 @@ class Main {
     }
 
     public static void PrintAmountArq(CRUD_HashId arq, int number) throws Exception {
+        System.out.println("_____________________");
         System.out.println("Lendo todos os livros");
 
         for (int i = 0; i < number; i++) {
